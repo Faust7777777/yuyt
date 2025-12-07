@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/teacher/teacher-schedule/teacher-schedule",
+    "pages/teacher/teacher-appointments/teacher-appointments",
+    "pages/student/schedule/schedule"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTitleText": "预约系统",
+    "navigationBarTextStyle": "white"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "cloud": true
+}

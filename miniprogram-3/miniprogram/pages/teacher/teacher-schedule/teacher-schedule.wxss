@@ -1,0 +1,141 @@
+.container {
+  padding: 30rpx;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.5;
+}
+
+.schedule-wrapper {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.schedule {
+  background: white;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+  display: inline-block;
+  min-width: 100%;
+}
+
+.row {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+}
+
+.header-row {
+  background: #667eea;
+}
+
+.cell {
+  min-width: 120rpx;
+  padding: 30rpx 10rpx;
+  text-align: center;
+  font-size: 28rpx;
+}
+
+.time-header,
+.day-header {
+  color: white;
+  font-weight: bold;
+}
+
+.time-cell {
+  background: #f8f8f8;
+  color: #666;
+  font-size: 22rpx;
+  min-width: 140rpx;
+}
+
+.slot-cell {
+  border-left: 1rpx solid #eee;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+/* 🟡 黄色 - 待确认 */
+.slot-cell.pending {
+  background: #FFF9C4;
+  color: #F57C00;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+/* 🟢 绿色 - 已确认 */
+.slot-cell.confirmed {
+  background: #4CAF50;
+  color: white;
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+/* 🔴 灰色 - 待删除 */
+.slot-cell.deleting {
+  background: #BDBDBD;
+  color: #757575;
+  font-size: 40rpx;
+  font-weight: bold;
+  text-decoration: line-through;
+}
+
+.footer {
+  margin-top: 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.confirm-add-btn {
+  width: 100%;
+  padding: 30rpx;
+  background: linear-gradient(135deg, #FDD835 0%, #F57C00 100%);
+  color: white;
+  font-size: 32rpx;
+  border-radius: 16rpx;
+  border: none;
+  font-weight: bold;
+}
+
+.confirm-delete-btn {
+  width: 100%;
+  padding: 30rpx;
+  background: linear-gradient(135deg, #E57373 0%, #D32F2F 100%);
+  color: white;
+  font-size: 32rpx;
+  border-radius: 16rpx;
+  border: none;
+  font-weight: bold;
+}
+
+.view-appointments-btn {
+  width: 100%;
+  padding: 30rpx;
+  background: white;
+  color: #667eea;
+  font-size: 32rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #667eea;
+}
+
+.view-appointments-btn::after {
+  border: none;
+}

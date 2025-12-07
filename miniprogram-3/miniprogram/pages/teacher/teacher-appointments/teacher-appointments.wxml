@@ -1,0 +1,50 @@
+<!--pages/teacher/teacher-appointments/teacher-appointments.wxml-->
+<view class="container">
+  <!-- 顶部标题 -->
+  <view class="header">
+    <text class="title">预约列表</text>
+    <text class="subtitle">查看学生预约情况</text>
+  </view>
+
+  <!-- 周切换 -->
+  <view class="week-selector">
+    <button class="week-btn" bindtap="prevWeek" disabled="{{currentWeekOffset === 0}}">
+      上一周
+    </button>
+    <text class="week-text">第 {{displayWeek}} 周</text>
+    <button class="week-btn" bindtap="nextWeek" disabled="{{currentWeekOffset >= 3}}">
+      下一周
+    </button>
+  </view>
+
+  <!-- 预约列表 -->
+  <scroll-view class="appointments-list" scroll-y>
+    <view class="empty" wx:if="{{appointments.length === 0}}">
+      <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+      <text class="empty-text">本周暂无预约</text>
+    </view>
+
+    <view class="appointment-card" wx:for="{{appointments}}" wx:key="id">
+      <view class="card-header">
+        <view class="student-info">
+          <text class="student-name">{{item.studentName}}</text>
+          <text class="student-id">学号: {{item.studentId}}</text>
+        </view>
+        <view class="status-badge status-{{item.status}}">
+          {{item.status === 'confirmed' ? '已确认' : '待确认'}}
+        </view>
+      </view>
+      
+      <view class="card-body">
+        <view class="info-row">
+          <text class="label">时间:</text>
+          <text class="value">{{item.weekdayName}} {{item.slotName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">时段:</text>
+          <text class="value">{{item.time}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

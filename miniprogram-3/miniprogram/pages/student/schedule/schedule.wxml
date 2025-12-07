@@ -1,0 +1,127 @@
+<wxs module="tools">
+  // 🔥 安全获取时段信息
+  var getSlotInfo = function(availableSlots, day, slot) {
+    if (!availableSlots || availableSlots.length === 0) return null;
+    
+    for (var i = 0; i < availableSlots.length; i++) {
+      var s = availableSlots[i];
+      if (s.day === day && s.slot === slot) {
+        return s;
+      }
+    }
+    return null;
+  };
+
+  // 🔥 检查是否是我的预约
+  var isMyBooking = function(myBookings, day, slot) {
+    if (!myBookings || myBookings.length === 0) return false;
+    
+    for (var i = 0; i < myBookings.length; i++) {
+      var b = myBookings[i];
+      if (b.day === day && b.slot === slot) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // 检查是否可预约
+  var isAvailable = function(availableSlots, myBookings, day, slot) {
+    if (isMyBooking(myBookings, day, slot)) return false;
+    var slotInfo = getSlotInfo(availableSlots, day, slot);
+    return slotInfo && !slotInfo.booked;
+  };
+
+  // 检查是否已约满
+  var isBooked = function(availableSlots, myBookings, day, slot) {
+    if (isMyBooking(myBookings, day, slot)) return false;
+    var slotInfo = getSlotInfo(availableSlots, day, slot);
+    return slotInfo && slotInfo.booked;
+  };
+
+  // 🔥 获取时段状态文本
+  var getSlotText = function(availableSlots, myBookings, day, slot) {
+    if (isMyBooking(myBookings, day, slot)) return '已预约';
+    var slotInfo = getSlotInfo(availableSlots, day, slot);
+    if (!slotInfo) return '-';
+    if (slotInfo.booked) return '已约满';
+    if (slotInfo.availableTeachers && slotInfo.availableTeachers.length > 0) {
+      return '可约(' + slotInfo.availableTeachers.length + ')';
+    }
+    return '可约';
+  };
+
+  module.exports = {
+    isMyBooking: isMyBooking,
+    isAvailable: isAvailable,
+    isBooked: isBooked,
+    getSlotText: getSlotText
+  };
+</wxs>
+
+<view class="container">
+  <view class="header">
+    <text class="title">教师空闲时间</text>
+    <text class="subtitle">绿色可预约 | 蓝色已预约(点击取消) | 灰色已约满</text>
+  </view>
+
+  <scroll-view scroll-x class="schedule-wrapper">
+    <view class="schedule">
+      <!-- 表头行 -->
+      <view class="row header-row">
+        <view class="cell time-header">时间</view>
+        <view 
+          class="cell day-header" 
+          wx:for="{{weekDays}}" 
+          wx:key="index">
+          {{item}}
+        </view>
+      </view>
+
+      <!-- 🔥 时间行循环 - 修复版 -->
+      <view 
+        class="row" 
+        wx:for="{{timeSlots}}" 
+        wx:key="{{index}}"  
+        wx:for-item="time"
+        wx:for-index="slotIndex">
+        
+        <!-- 时间列 -->
+        <view class="cell time-cell">{{time}}</view>
+        
+        <!-- 🔥 星期列循环 - 使用固定的 7 天 -->
+        <block wx:for="{{weekDays}}" wx:key="day_{{index}}" wx:for-index="dayIndex">
+          <view 
+            class="cell slot-cell {{tools.isMyBooking(myBookings, dayIndex, slotIndex) ? 'my-booking' : ''}} {{tools.isAvailable(availableSlots, myBookings, dayIndex, slotIndex) ? 'available' : ''}} {{tools.isBooked(availableSlots, myBookings, dayIndex, slotIndex) ? 'booked' : ''}}"
+            bindtap="bookSlot"
+            data-day="{{dayIndex}}"
+            data-slot="{{slotIndex}}">
+            
+            <text class="slot-text">{{tools.getSlotText(availableSlots, myBookings, dayIndex, slotIndex)}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 🔥 教师选择弹窗 -->
+  <view class="teacher-picker-mask" wx:if="{{showTeacherPicker}}" bindtap="cancelPicker">
+    <view class="teacher-picker" catchtap="">
+      <view class="picker-header">
+        <text class="picker-title">选择教师</text>
+        <text class="picker-cancel" bindtap="cancelPicker">取消</text>
+      </view>
+      <view class="teacher-list">
+        <view 
+          class="teacher-item"
+          wx:for="{{currentTeachers}}"
+          wx:key="id"
+          bindtap="selectTeacher"
+          data-teacher-id="{{item.id}}">
+          <text class="teacher-name">{{item.name}}</text>
+          <text class="teacher-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

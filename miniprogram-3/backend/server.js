@@ -31,8 +31,4 @@ app.use('/api/schedule', scheduleRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 
-// Server listen
-const port = process.env.PORT || 3000;
-app.listen(port, () =>
-  console.log('Backend started on port', port)
-);
+module.exports = app;

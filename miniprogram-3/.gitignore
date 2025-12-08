@@ -1,15 +1,1 @@
-# 环境变量敏感信息
-.env
-.env.local
-.env.*.local
 
-# Node 依赖
-node_modules/
-
-# 日志文件
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# 系统相关
-.DS_Store

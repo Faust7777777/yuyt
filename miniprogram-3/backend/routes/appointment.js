@@ -1,67 +1,134 @@
-const express = require('express');
+// backend/routes/appointment.js
+const express = require("express");
 const router = express.Router();
-const { getDb } = require('../utils/db');
-const { ObjectId } = require('mongodb');
+const { getDb } = require("../utils/db");
+const { ObjectId } = require("mongodb");
 
-// 学生预约
-router.post('/book', async (req, res) => {
-  const { teacherId, teacherName, day, slot, studentName, studentUsername } = req.body;
-
-  if (!teacherId || day === undefined || slot === undefined || !studentUsername) {
-    return res.json({ code: 400, message: '参数不完整' });
-  }
-
+// ========== 学生获取预约 ==========
+router.get("/getByStudent", async (req, res) => {
   try {
+    const studentUsername = req.query.studentUsername;
     const { db } = await getDb();
 
-    // 防冲突
-    const conflict = await db.collection('appointments')
+    const data = await db
+      .collection("appointments")
+      .find({ studentUsername })
+      .toArray();
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    return res.json({ success: false, message: err.message });
+  }
+});
+
+// ========== 教师获取预约 ==========
+router.get("/getByTeacher", async (req, res) => {
+  try {
+    const teacherId = req.query.teacherId;
+    const { db } = await getDb();
+
+    const data = await db
+      .collection("appointments")
+      .find({ teacherId })
+      .toArray();
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    return res.json({ success: false, message: err.message });
+  }
+});
+
+// ========== 所有预约（学生可用） ==========
+router.get("/getAll", async (req, res) => {
+  try {
+    const { db } = await getDb();
+    const data = await db.collection("appointments").find().toArray();
+
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    return res.json({ success: false, message: err.message });
+  }
+});
+
+// ========== 学生预约 ==========
+router.post("/book", async (req, res) => {
+  try {
+    const { db } = await getDb();
+    const { teacherId, teacherName, day, slot, studentName, studentUsername } =
+      req.body;
+
+    if (!teacherId || day === undefined || slot === undefined) {
+      return res.json({ success: false, message: "参数不完整" });
+    }
+
+    // 冲突检查
+    const conflict = await db
+      .collection("appointments")
       .findOne({ teacherId, day, slot });
+
     if (conflict)
-      return res.json({ code: 400, message: '该教师该时间段已被预约' });
+      return res.json({ success: false, message: "该时间段已被预约" });
 
-    await db.collection('appointments').insertOne({
-      teacherId, teacherName, day, slot,
-      studentName, studentUsername,
-      bookingTime: new Date()
+    // 验证教师是否开放该时间段
+    const schedule = await db.collection("schedules").findOne({ teacherId });
+    const valid =
+      schedule &&
+      Array.isArray(schedule.slots) &&
+      schedule.slots.some((s) => s.day === day && s.slot === slot);
+
+    if (!valid)
+      return res.json({ success: false, message: "该时间段不可预约" });
+
+    // 插入预约
+    const result = await db.collection("appointments").insertOne({
+      teacherId,
+      teacherName,
+      day,
+      slot,
+      studentName,
+      studentUsername,
+      bookingTime: new Date(),
     });
 
-    res.json({ code: 200 });
+    return res.json({ success: true, data: { insertedId: result.insertedId } });
   } catch (err) {
-    res.json({ code: 500, message: err.message });
+    console.error(err);
+    return res.json({ success: false, message: err.message });
   }
 });
 
-// 学生查看预约
-router.get('/getByStudent', async (req, res) => {
-  const { studentUsername } = req.query;
+// ========== 学生取消预约 ==========
+router.post("/cancel", async (req, res) => {
   try {
     const { db } = await getDb();
-    const data = await db.collection('appointments')
-      .find({ studentUsername }).toArray();
-    res.json({ code: 200, data: { bookings: data } });
+    const { bookingId, studentUsername } = req.body;
+
+    if (!bookingId)
+      return res.json({ success: false, message: "bookingId 缺失" });
+
+    let _id;
+    try {
+      _id = new ObjectId(bookingId);
+    } catch {
+      return res.json({ success: false, message: "bookingId 无效" });
+    }
+
+    const record = await db.collection("appointments").findOne({ _id });
+    if (!record)
+      return res.json({ success: false, message: "预约记录不存在" });
+
+    if (record.studentUsername !== studentUsername)
+      return res.json({ success: false, message: "无权取消此预约" });
+
+    await db.collection("appointments").deleteOne({ _id });
+
+    return res.json({ success: true });
   } catch (err) {
-    res.json({ code: 500, message: err.message });
-  }
-});
-
-// 学生取消预约
-router.post('/cancel', async (req, res) => {
-  const { bookingId, studentUsername } = req.body;
-  try {
-    const { db } = await getDb();
-
-    const result = await db.collection('appointments').deleteOne({
-      _id: new ObjectId(bookingId),
-      studentUsername
-    });
-
-    if (result.deletedCount === 0)
-      return res.json({ code: 400, message: '取消失败' });
-
-    res.json({ code: 200 });
-  } catch (err) {
-    res.json({ code: 500, message: err.message });
+    console.error(err);
+    return res.json({ success: false, message: err.message });
   }
 });
 

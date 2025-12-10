@@ -1,27 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const { connectDB } = require("../utils/db");
+const { getDb } = require("../utils/db");
 
 router.post("/login", async (req, res) => {
+  const { username, password, role } = req.body;
+
   try {
-    await connectDB();
-    const mongoose = require("mongoose");
-    const User = mongoose.model("User");
+    const { db } = await getDb();
 
-    const { username, password, role } = req.body;
-
-    const user = await User.findOne({ username, password, role });
+    const user = await db.collection("users").findOne({ username, password, role });
 
     if (!user) {
       return res.json({ success: false, message: "用户名或密码错误" });
     }
 
-    res.json({
+    return res.json({
       success: true,
-      data: { username: user.username, role: user.role, name: user.name }
+      data: {
+        username: user.username,
+        role: user.role,
+        name: user.name
+      }
     });
+
   } catch (err) {
-    res.json({ success: false, message: err.message });
+    console.error(err);
+    return res.json({ success: false, message: err.message });
   }
 });
 

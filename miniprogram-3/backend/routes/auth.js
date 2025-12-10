@@ -1,37 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const mongoose = require('mongoose');
+const { connectDB } = require("../utils/db");
 
-// 用户模型
-const User = mongoose.model('User', new mongoose.Schema({
-  username: String,
-  password: String,
-  role: String,
-  name: String,
-}));
-
-router.post('/login', async (req, res) => {
-  const { username, password, role } = req.body;
-
+router.post("/login", async (req, res) => {
   try {
+    await connectDB();
+    const mongoose = require("mongoose");
+    const User = mongoose.model("User");
+
+    const { username, password, role } = req.body;
+
     const user = await User.findOne({ username, password, role });
 
     if (!user) {
-      return res.json({ success: false, message: '用户名或密码错误' });
+      return res.json({ success: false, message: "用户名或密码错误" });
     }
 
-    return res.json({
+    res.json({
       success: true,
-      data: {
-        username: user.username,
-        role: user.role,
-        name: user.name
-      }
+      data: { username: user.username, role: user.role, name: user.name }
     });
-
   } catch (err) {
-    console.error(err);
-    return res.json({ success: false, message: err.message });
+    res.json({ success: false, message: err.message });
   }
 });
 

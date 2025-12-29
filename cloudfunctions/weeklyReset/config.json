@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "triggers": [
+    {
+      "name": "weekly-reset",
+      "type": "timer",
+      "config": "0 50 9 * * * *"
+    }
+  ]
+}

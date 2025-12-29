@@ -1,0 +1,39 @@
+<!--pages/teacher/time-setting/time-setting.wxml-->
+<view class="setting-container">
+  <view class="header">
+    <text class="title">设置空闲时间</text>
+    <button class="btn-save" bindtap="saveSettings">保存</button>
+  </view>
+
+  <view class="tip">点击选择你的空闲时间段</view>
+
+  <scroll-view scroll-x class="schedule-scroll">
+    <view class="schedule-table">
+      <view class="table-header">
+        <view class="cell time-cell">时间</view>
+        <view class="cell" wx:for="{{weekdays}}" wx:key="id">{{item.name}}</view>
+      </view>
+
+      <view class="table-row" wx:for="{{timeSlots}}" wx:key="id" wx:for-item="slot">
+        <view class="cell time-cell">
+          <text class="slot-name">{{slot.name}}</text>
+          <text class="slot-time">{{slot.start}}-{{slot.end}}</text>
+        </view>
+        
+        <view class="cell slot-cell selectable" 
+              wx:for="{{weekdays}}" wx:key="id" wx:for-item="day"
+              bindtap="toggleSlot"
+              data-day="{{day.id}}"
+              data-slot="{{slot.id}}">
+          <view class="slot-content {{isSelected(day.id, slot.id) ? 'selected' : ''}}">
+            <text>{{isSelected(day.id, slot.id) ? '✓ 空闲' : '选择'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <button class="btn-view-appointments" bindtap="goToAppointments">
+    查看预约情况
+  </button>
+</view>

@@ -1,27 +1,23 @@
 <wxs module="tools">
-  // 判断时段状态
   var getSlotStatus = function(confirmedSlots, pendingSlots, deletingSlots, day, slot) {
-    // 检查是否在待删除列表
     for (var i = 0; i < deletingSlots.length; i++) {
       if (deletingSlots[i].day === day && deletingSlots[i].slot === slot) {
         return 'deleting';
       }
     }
-    
-    // 检查是否在已确认列表
-    for (var i = 0; i < confirmedSlots.length; i++) {
-      if (confirmedSlots[i].day === day && confirmedSlots[i].slot === slot) {
+
+    for (var j = 0; j < confirmedSlots.length; j++) {
+      if (confirmedSlots[j].day === day && confirmedSlots[j].slot === slot) {
         return 'confirmed';
       }
     }
-    
-    // 检查是否在待确认列表
-    for (var i = 0; i < pendingSlots.length; i++) {
-      if (pendingSlots[i].day === day && pendingSlots[i].slot === slot) {
+
+    for (var k = 0; k < pendingSlots.length; k++) {
+      if (pendingSlots[k].day === day && pendingSlots[k].slot === slot) {
         return 'pending';
       }
     }
-    
+
     return '';
   };
 
@@ -33,39 +29,30 @@
 <view class="container">
   <view class="header">
     <text class="title">设置本周空闲时间</text>
-    <text class="subtitle">🟡 黄色=待确认 🟢 绿色=已设置 🔴 灰色=待删除</text>
+    <text class="subtitle">黄色待确认，绿色已设置，灰色待删除</text>
   </view>
 
   <scroll-view scroll-x class="schedule-wrapper">
     <view class="schedule">
       <view class="row header-row">
         <view class="cell time-header">时间</view>
-        <view 
-          class="cell day-header" 
-          wx:for="{{weekDays}}" 
-          wx:key="index">
+        <view class="cell day-header" wx:for="{{weekDays}}" wx:key="index">
           {{item}}
         </view>
       </view>
 
-      <view 
-        class="row" 
-        wx:for="{{timeSlots}}" 
-        wx:key="index"
-        wx:for-item="time"
-        wx:for-index="slotIndex">
-        
+      <view class="row" wx:for="{{timeSlots}}" wx:key="index" wx:for-item="time" wx:for-index="slotIndex">
         <view class="cell time-cell">{{time}}</view>
-        
-        <view 
+
+        <view
           class="cell slot-cell {{tools.getSlotStatus(confirmedSlots, pendingSlots, deletingSlots, dayIndex, slotIndex)}}"
-          wx:for="{{weekDays}}" 
+          wx:for="{{weekDays}}"
           wx:key="index"
           wx:for-index="dayIndex"
           bindtap="toggleSlot"
           data-day="{{dayIndex}}"
-          data-slot="{{slotIndex}}">
-          
+          data-slot="{{slotIndex}}"
+        >
           <text wx:if="{{tools.getSlotStatus(confirmedSlots, pendingSlots, deletingSlots, dayIndex, slotIndex) === 'confirmed'}}">✓</text>
           <text wx:elif="{{tools.getSlotStatus(confirmedSlots, pendingSlots, deletingSlots, dayIndex, slotIndex) === 'pending'}}">?</text>
           <text wx:elif="{{tools.getSlotStatus(confirmedSlots, pendingSlots, deletingSlots, dayIndex, slotIndex) === 'deleting'}}">✗</text>
@@ -75,16 +62,8 @@
   </scroll-view>
 
   <view class="footer">
-    <button class="confirm-add-btn" bindtap="confirmAdd">
-      ✅ 确认设置 ({{pendingSlots.length}})
-    </button>
-    
-    <button class="confirm-delete-btn" bindtap="confirmDelete">
-      🗑️ 确认删除 ({{deletingSlots.length}})
-    </button>
-    
-    <button class="view-appointments-btn" bindtap="viewAppointments">
-      📋 查看预约记录
-    </button>
+    <button class="confirm-add-btn" bindtap="confirmAdd">确认设置 ({{pendingSlots.length}})</button>
+    <button class="confirm-delete-btn" bindtap="confirmDelete">确认删除 ({{deletingSlots.length}})</button>
+    <button class="view-appointments-btn" bindtap="viewAppointments">查看预约记录</button>
   </view>
 </view>

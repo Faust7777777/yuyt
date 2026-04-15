@@ -1,0 +1,13 @@
+node_modules/
+cloudfunctions/**/node_modules/
+
+project.private.config.json
+launch.json
+
+miniprogram_npm/
+dist/
+build/
+
+.DS_Store
+Thumbs.db
+*.log

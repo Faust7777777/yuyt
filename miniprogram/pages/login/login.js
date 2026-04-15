@@ -2,14 +2,10 @@ const API = require('../../utils/api');
 
 Page({
   data: {
-    // 教师登录
     username: '',
     password: '',
-
-    // 学生登录（新：学号+手机号）
     studentNo: '',
     studentPhone: '',
-
     role: 'student',
     roleOptions: [
       { value: 'student', label: '学生' },
@@ -50,11 +46,13 @@ Page({
 
       if (role === 'teacher') {
         const { username, password } = this.data;
+
         if (!username || !password) {
           wx.hideLoading();
           wx.showToast({ title: '请输入用户名和密码', icon: 'none' });
           return;
         }
+
         res = await API.login(username, password, role);
       } else {
         const { studentNo, studentPhone } = this.data;
@@ -65,10 +63,9 @@ Page({
           return;
         }
 
-        // 简单校验（避免误输）
         if (!/^\d{11}$/.test(studentPhone)) {
           wx.hideLoading();
-          wx.showToast({ title: '手机号应为11位数字', icon: 'none' });
+          wx.showToast({ title: '手机号应为 11 位数字', icon: 'none' });
           return;
         }
 
@@ -99,15 +96,5 @@ Page({
         showCancel: false
       });
     }
-  },
-
-
-
-  fillTeacher() {
-    this.setData({
-      username: 'teacher01',
-      password: '123456',
-      role: 'teacher'
-    });
   }
 });

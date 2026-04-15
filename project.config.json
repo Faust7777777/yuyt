@@ -45,7 +45,7 @@
     "disableSWC": true
   },
   "appid": "wxb1f246b04ca4d724",
-  "projectname": "quickstart-wx-cloud",
+  "projectname": "teacher-appointment-miniprogram",
   "libVersion": "2.20.1",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
   "condition": {
@@ -62,13 +62,7 @@
       "list": []
     },
     "miniprogram": {
-      "list": [
-        {
-          "id": -1,
-          "name": "db guide",
-          "pathName": "pages/databaseGuide/databaseGuide"
-        }
-      ]
+      "list": []
     }
   },
   "compileType": "miniprogram",
